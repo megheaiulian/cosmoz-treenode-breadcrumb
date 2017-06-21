@@ -1,0 +1,275 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../cosmoz-tree/cosmoz-tree.html">
+
+<!--
+`cosmoz-treenode-breadcrumb` is a component to display the path of a node from a `cosmoz-tree` data structure.
+
+The component uses a custom template to display each path part, allowing user to render html links or buttons for each path part.
+
+@demo demo/index.html
+-->
+<dom-module id="cosmoz-treenode-breadcrumb">
+	<template>
+		<style>
+			:host {
+				@apply --layout-horizontal;
+				@apply --layout-wrap;
+			}
+
+			:host([no-wrap]) {
+				@apply --layout-no-wrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			#ellipsis {
+				margin-right: 0.2em;
+				flex-shrink: 0;
+			}
+
+			::slotted(.separator) {
+                margin: 0 0.2em;
+				flex-shrink: 0;
+            }
+
+			::slotted(*) {
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				flex-shrink: 1;
+				overflow: hidden;
+			}
+
+			::slotted(*:last-child) {
+				flex-shrink: 0;
+			}
+
+			::slotted(.separator.separator0) {
+				display: none;
+			}
+		</style>
+
+		<template>
+			<span class$="separator separator[[ index ]]">[[ pathSeparator ]]</span> <span title$="[[ value ]]" class="part">[[ value ]]</span>
+		</template>
+
+		<span id="ellipsis" hidden$="[[ _hideEllipsis ]]" title$="[[ _textPath ]]">[[ ellipsis ]]</span>
+
+		<slot></slot>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'cosmoz-treenode-breadcrumb',
+
+			properties: {
+
+				/**
+				 * Name of the property used to lookup the displayed node in the tree
+				 */
+				keyProperty: {
+					type: String,
+				},
+
+				/**
+				 * The value for the `keyProperty` used to lookup the node in the tree.
+				 */
+				keyValue: {
+					type: String
+				},
+
+				ownerTree: {
+					type: Cosmoz.Tree
+				},
+
+				indexAs: {
+					type: String,
+					value: 'index'
+				},
+
+				nodeAs: {
+					type: String,
+					value: 'node'
+				},
+
+				valueAs: {
+					type: String,
+					value: 'value'
+				},
+
+				valueProperty: {
+					type: String,
+					value: 'name'
+				},
+
+				pathSeparator: {
+					type: String,
+					value: '/'
+				},
+
+				/**
+				 * Represent a number of nodes that should not be rendered starting from root.
+				 * If the path to the displayed node has less nodes than this number, then nothing is hidden.
+				 */
+				hideFromRoot: {
+					type: Number,
+					value: 0
+				},
+
+				showMaxNodes: {
+					type: Number,
+					value: 0
+				},
+
+				ellipsis: {
+					type: String,
+					value: '… /'
+				},
+
+				noWrap: {
+					type: Boolean,
+					reflectToAttribute: true
+				},
+
+				_path: {
+					type: Array,
+					computed: '_computePath(ownerTree, keyProperty, keyValue)'
+				},
+
+				_pathToRender: {
+					type: Array,
+					computed: '_computePathToRender(_path, hideFromRoot, showMaxNodes)'
+				},
+
+				_textPath: {
+					type: String
+				},
+
+				_hideEllipsis: {
+					type: Boolean,
+					value: true
+				}
+			},
+
+			behaviors: [
+				Polymer.Templatizer
+			],
+
+			observers: [
+				'_renderNode(_pathToRender, pathSeparator)'
+			],
+
+			_templateInstances: null,
+
+			ready: function () {
+				this._instanceProps = {};
+				this._instanceProps[this.nodeAs] = true;
+				this._instanceProps[this.indexAs] = true;
+				this._instanceProps[this.valueAs] = true;
+				this._templateInstances = [];
+			},
+
+			_computePathToRender: function (path, hideFromRoot, showMaxNode) {
+				var pathToRender = path;
+				if (hideFromRoot > 0 && path.length > hideFromRoot) {
+					pathToRender = path.slice(hideFromRoot);
+				}
+
+				if (showMaxNode > 0 && pathToRender.length > showMaxNode) {
+					pathToRender = path.slice(-showMaxNode);
+				}
+
+				return pathToRender;
+			},
+
+			_computePath: function (ownerTree, keyProperty, keyValue) {
+				return ownerTree.getPathByProperty(keyProperty, keyValue);
+			},
+
+			_renderNode: function (pathToRender) {
+
+				if (!pathToRender || !Array.isArray(pathToRender) || pathToRender.length === 0) {
+					this._hideEllipsis = true;
+					return;
+				}
+
+				var parent,
+					instance,
+					node,
+					i;
+
+				this._cleanPreviousRender();
+
+				parent = Polymer.dom(this);
+				this._ensureTemplatized();
+
+				if (pathToRender.length > this._templateInstances.length) {
+					for (i = this._templateInstances.length; i < pathToRender.length; i++) {
+						this._templateInstances.push(this.stamp());
+					}
+				} else if (pathToRender.length < this._templateInstances.length) {
+					this._templateInstances.splice(pathToRender.length);
+				}
+
+				for (i = 0; i < pathToRender.length; i+=1) {
+					node = pathToRender[i];
+					instance = this._templateInstances[i];
+					instance[this.nodeAs] = node;
+					instance[this.indexAs] = i;
+					instance[this.valueAs] = this.ownerTree.getProperty(node, this.valueProperty);
+					parent.appendChild(instance.root);
+				}
+
+				this._hideEllipsis = pathToRender.length === this._path.length;
+				this._textPath = this._path.map(function (node) {
+					return this.ownerTree.getProperty(node, this.valueProperty);
+				}, this).join(this.pathSeparator);
+			},
+
+			_cleanPreviousRender: function () {
+				var inst,
+					i,
+					j;
+
+				if (this._templateInstances !== undefined && this._templateInstances.length > 0) {
+					for (i = 0; i < this._templateInstances.length; i+=1) {
+						inst = this._templateInstances[i];
+						// TODO(pasleq): not safe to use Templatizer internal property, but seems children is not working on Safari
+						// See Polymer.Templatizer source
+						for (j = 0; j <inst._children.length; j+=1) {
+							// Appending the child to instance instance's root will detach it from it's current location
+							Polymer.dom(inst.root).appendChild(inst._children[j]);
+						}
+					}
+				}
+			},
+
+			_ensureTemplatized: function () {
+				if (!this.ctor) {
+					this._nodeTemplate = Polymer.dom(this).querySelector('template');
+					if (this._nodeTemplate === null) {
+						this._nodeTemplate = Polymer.dom(this.root).querySelector('template');
+					}
+
+					this.templatize(this._nodeTemplate);
+				}
+			},
+
+			_forwardParentProp: function (prop, value) {
+				if (this._templateInstances) {
+					this._templateInstances.forEach(function (inst) {
+						inst[prop] = value;
+					}, this);
+				}
+			},
+
+			_forwardParentPath: function (path, value) {
+				if (this._templateInstances) {
+					this._templateInstances.forEach(function (inst) {
+						inst.notifyPath(path, value, true);
+					});
+				}
+			}
+		});
+	</script>
+</dom-module>

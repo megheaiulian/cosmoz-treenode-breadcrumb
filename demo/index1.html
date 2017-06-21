@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+		<title>cosmoz-treenode demo</title>
+
+		<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+		<link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+		<link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+		<link rel="import" href="../../iron-ajax/iron-ajax.html">
+		<link rel="import" href="../../cosmoz-tree/cosmoz-default-tree.html">
+		<link rel="import" href="../cosmoz-treenode.html">
+		<style is="custom-style" include="demo-pages-shared-styles">
+
+			body {
+				margin: 0;
+        		height: 100vh;
+			}
+			#container {
+				display:block;
+				overflow: hidden;
+			}
+
+			#path {
+				display: flex;
+				flex-direction:row;
+				flex-wrap:wrap;
+				justify-content: flex-start;
+				/*direction: rtl;
+				white-space: nowrap;
+				text-align: left;
+				overflow: hidden;
+				text-overflow: ellipsis;*/
+			}
+
+			#path > * {
+				white-space: nowrap;
+			}
+
+			.part {
+				text-overflow: ellipsis;
+				overflow: hidden;
+			}
+
+			.separator {
+				overflow: hidden;
+				text-overflow: clip;
+			}
+
+			#ellipsis {
+				white-space: nowrap;
+			}
+
+
+			*[dir="ltr"] { direction: ltr; unicode-bidi: embed; }
+
+*[dir="rtl"] { direction: rtl; unicode-bidi: embed; }
+
+bdo[dir="ltr"] { direction: ltr; unicode-bidi: bidi-override; }
+
+bdo[dir="rtl"] { direction: rtl; unicode-bidi: bidi-override; }
+		</style>
+	</head>
+	<body>
+		<div>
+			<h3>Basic cosmoz-treenode demo</h3>
+			<div id="container">
+				<!--<div id="ellipsis">...</div>-->
+
+				<div id="path">
+					<span  style="flex-shrink: 0;"  class="part">1 abcdcfghih adkhasdlask d</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 1;"  class="part">222222 22222</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">3333333333 333333</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">5555 5 5 555 5 5</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">666 6 6666666</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">77 7 77777777777</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">888888888888888888</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">999999999999999</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">0000000000000000000</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">AAAAA A AAAAAAAAAAAAAAAAA</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">BB BB BBBBBBBBBBBBBBBBBBB</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">CCC C CCCCCCCCCCCCCCCCCCC</span>
+					<span class="separator">/</span>
+					<span style="flex-shrink: 4;" class="part">DDD DDDDDDDDDDDDDDDDDDDDDD</span>
+
+				</div>
+			</div>
+		</div>
+		<div>
+			<p>This text will go left to right.</p>
+			<p style="direction: rtl;">1 This text will go left to 1 right.</p>
+<p><bdo dir="rtl">This text will go right to left.</bdo></p>
+		</div>
+	</body>
+</html>
