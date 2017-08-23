@@ -211,7 +211,7 @@ The component uses a custom template to display each path part, allowing user to
 					this._templateInstances.splice(pathToRender.length);
 				}
 
-				for (i = 0; i < pathToRender.length; i+=1) {
+				for (i = 0; i < pathToRender.length; i += 1) {
 					node = pathToRender[i];
 					instance = this._templateInstances[i];
 					instance[this.nodeAs] = node;
@@ -232,11 +232,11 @@ The component uses a custom template to display each path part, allowing user to
 					j;
 
 				if (this._templateInstances !== undefined && this._templateInstances.length > 0) {
-					for (i = 0; i < this._templateInstances.length; i+=1) {
+					for (i = 0; i < this._templateInstances.length; i += 1) {
 						inst = this._templateInstances[i];
 						// TODO(pasleq): not safe to use Templatizer internal property, but seems children is not working on Safari
 						// See Polymer.Templatizer source
-						for (j = 0; j <inst._children.length; j+=1) {
+						for (j = 0; j < inst._children.length; j += 1) {
 							// Appending the child to instance instance's root will detach it from it's current location
 							Polymer.dom(inst.root).appendChild(inst._children[j]);
 						}
