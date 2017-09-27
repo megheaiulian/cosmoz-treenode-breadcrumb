@@ -253,7 +253,10 @@ The component uses a custom template to display each path part, allowing user to
 					instance[this.indexAs] = i;
 					instance[this.valueAs] = this.ownerTree.getProperty(node, this.valueProperty);
 					parent.appendChild(instance.root);
-					instance._flushProperties && instance._flushProperties(true);
+
+					if (instance._flushProperties) {
+						instance._flushProperties(true);
+					}
 				}
 
 				this._hideEllipsis = pathToRender.length === this._path.length;
@@ -272,7 +275,7 @@ The component uses a custom template to display each path part, allowing user to
 						inst = this._templateInstances[i];
 						// TODO(pasleq): not safe to use Templatizer internal property, but seems children is not working on Safari
 						// See Polymer.Templatizer source
-						if(inst._children){
+						if (inst._children){
 							for (j = 0; j < inst._children.length; j += 1) {
 								// Appending the child to instance instance's root will detach it from it's current location
 								Polymer.dom(inst.root).appendChild(inst._children[j]);

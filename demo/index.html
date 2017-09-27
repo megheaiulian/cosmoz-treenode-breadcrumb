@@ -110,7 +110,9 @@
 			var basic = document.getElementById('basic');
 			basic = !basic.set ? basic.firstElementChild : basic;
 			basic.getOwnerTree = function (treeJson) {
-				if(treeJson) return new Cosmoz.DefaultTree(treeJson);
+				if (treeJson) {
+					return new Cosmoz.DefaultTree(treeJson);
+				}
 			};
 			basic.set('doRequest', true);
 		});
