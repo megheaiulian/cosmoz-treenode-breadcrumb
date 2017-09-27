@@ -253,6 +253,7 @@ The component uses a custom template to display each path part, allowing user to
 					instance[this.indexAs] = i;
 					instance[this.valueAs] = this.ownerTree.getProperty(node, this.valueProperty);
 					parent.appendChild(instance.root);
+					instance._flushProperties && instance._flushProperties(true);
 				}
 
 				this._hideEllipsis = pathToRender.length === this._path.length;
