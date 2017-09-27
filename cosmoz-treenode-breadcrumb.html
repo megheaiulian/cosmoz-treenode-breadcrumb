@@ -170,6 +170,10 @@ The component uses a custom template to display each path part, allowing user to
 			},
 
 			_computePathToRender: function (path, hideFromRoot, showMaxNode) {
+				if (!path){
+					return;
+				}
+
 				var pathToRender = path;
 				if (hideFromRoot > 0 && path.length > hideFromRoot) {
 					pathToRender = path.slice(hideFromRoot);
@@ -188,6 +192,7 @@ The component uses a custom template to display each path part, allowing user to
 				var path = null,
 					node,
 					i;
+
 				if (!ownerTree) {
 					return;
 				}
